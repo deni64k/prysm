@@ -46,8 +46,8 @@ def prysm_deps():
         name = "com_github_ferranbt_fastssz",
         importpath = "github.com/ferranbt/fastssz",
         nofuzz = True,
-        sum = "h1:8DS7uDmUkGF6UKNU1HivEsjrTusxLPb05KUr/D8ONWQ=",
-        version = "v0.0.0-20200826142241-3a913c5a1313",
+        sum = "h1:CyZfS2WJR1gLblUd84UXkz8M47dENiwe3/AcQaIuLdg=",
+        version = "v0.0.0-20201019195157-d731d50f87dd",
     )
     go_repository(
         name = "com_github_prysmaticlabs_bazel_go_ethereum",
@@ -590,8 +590,8 @@ def prysm_deps():
     go_repository(
         name = "com_github_go_sql_driver_mysql",
         importpath = "github.com/go-sql-driver/mysql",
-        sum = "h1:ozyZYNQW3x3HtqT1jira07DN2PArx2v7/mN66gGcHOs=",
-        version = "v1.5.0",
+        sum = "h1:g24URVg0OFbNUTx9qqY1IRZ9D9z3iPyi5zKhQZpNwpA=",
+        version = "v1.4.1",
     )
     go_repository(
         name = "com_github_golang_protobuf",
@@ -784,8 +784,8 @@ def prysm_deps():
     go_repository(
         name = "com_github_jmespath_go_jmespath",
         importpath = "github.com/jmespath/go-jmespath",
-        sum = "h1:BEgLn5cpjn8UN1mAw4NjwDrS35OdebyEtFe+9YPoQUg=",
-        version = "v0.4.0",
+        sum = "h1:pmfjZENx5imkbgOkpRUYLnmbU7UEFbjtDA2hxJ1ichM=",
+        version = "v0.0.0-20180206201540-c2b33e8439af",
     )
     go_repository(
         name = "com_github_jrick_logrotate",
@@ -1916,8 +1916,8 @@ def prysm_deps():
     go_repository(
         name = "com_github_aws_aws_sdk_go",
         importpath = "github.com/aws/aws-sdk-go",
-        sum = "h1:FHMhVhyc/9jljgFAcGkQDYjpC9btM0B8VfkLBfctdNE=",
-        version = "v1.35.7",
+        sum = "h1:J82DYDGZHOKHdhx6hD24Tm30c2C3GchYGfN0mf9iKUk=",
+        version = "v1.25.48",
     )
     go_repository(
         name = "com_github_beorn7_perks",
@@ -3653,4 +3653,10 @@ def prysm_deps():
         importpath = "github.com/jmespath/go-jmespath/internal/testify",
         sum = "h1:shLQSRRSCCPj3f2gpwzGwWFoC7ycTf1rcQZHOlsJ6N8=",
         version = "v1.5.1",
+    )
+    go_repository(
+        name = "com_github_farazdagi_prysm_shared_types",
+        importpath = "github.com/farazdagi/prysm-shared-types",
+        sum = "h1:e2zkyhuTX0jnreU2xB7JJlZonpekt1wWREJ/x1C79r8=",
+        version = "v0.0.0-20201019221602-a80cc791f553",
     )
