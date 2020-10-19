@@ -28,7 +28,7 @@ func (b *BeaconState) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = append(dst, b.GenesisValidatorsRoot...)
 
 	// Field (2) 'Slot'
-	dst = ssz.MarshalUint64(dst, b.Slot)
+	dst = ssz.MarshalUint64(dst, uint64(b.Slot))
 
 	// Field (3) 'Fork'
 	if b.Fork == nil {
@@ -270,7 +270,7 @@ func (b *BeaconState) UnmarshalSSZ(buf []byte) error {
 	b.GenesisValidatorsRoot = append(b.GenesisValidatorsRoot, buf[8:40]...)
 
 	// Field (2) 'Slot'
-	b.Slot = ssz.UnmarshallUint64(buf[40:48])
+	b.Slot = github_com_farazdagi_prysm_shared_types.Slot(ssz.UnmarshallUint64(buf[40:48]))
 
 	// Field (3) 'Fork'
 	if b.Fork == nil {
@@ -554,7 +554,7 @@ func (b *BeaconState) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	hh.PutBytes(b.GenesisValidatorsRoot)
 
 	// Field (2) 'Slot'
-	hh.PutUint64(b.Slot)
+	hh.PutUint64(uint64(b.Slot))
 
 	// Field (3) 'Fork'
 	if err = b.Fork.HashTreeRootWith(hh); err != nil {
@@ -785,7 +785,7 @@ func (f *Fork) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = append(dst, f.CurrentVersion...)
 
 	// Field (2) 'Epoch'
-	dst = ssz.MarshalUint64(dst, f.Epoch)
+	dst = ssz.MarshalUint64(dst, uint64(f.Epoch))
 
 	return
 }
@@ -811,7 +811,7 @@ func (f *Fork) UnmarshalSSZ(buf []byte) error {
 	f.CurrentVersion = append(f.CurrentVersion, buf[4:8]...)
 
 	// Field (2) 'Epoch'
-	f.Epoch = ssz.UnmarshallUint64(buf[8:16])
+	f.Epoch = github_com_farazdagi_prysm_shared_types.Epoch(ssz.UnmarshallUint64(buf[8:16]))
 
 	return err
 }
@@ -846,7 +846,7 @@ func (f *Fork) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	hh.PutBytes(f.CurrentVersion)
 
 	// Field (2) 'Epoch'
-	hh.PutUint64(f.Epoch)
+	hh.PutUint64(uint64(f.Epoch))
 
 	hh.Merkleize(indx)
 	return
@@ -1389,7 +1389,7 @@ func (b *BeaconBlocksByRangeRequest) MarshalSSZTo(buf []byte) (dst []byte, err e
 	dst = buf
 
 	// Field (0) 'StartSlot'
-	dst = ssz.MarshalUint64(dst, b.StartSlot)
+	dst = ssz.MarshalUint64(dst, uint64(b.StartSlot))
 
 	// Field (1) 'Count'
 	dst = ssz.MarshalUint64(dst, b.Count)
@@ -1409,7 +1409,7 @@ func (b *BeaconBlocksByRangeRequest) UnmarshalSSZ(buf []byte) error {
 	}
 
 	// Field (0) 'StartSlot'
-	b.StartSlot = ssz.UnmarshallUint64(buf[0:8])
+	b.StartSlot = github_com_farazdagi_prysm_shared_types.Slot(ssz.UnmarshallUint64(buf[0:8]))
 
 	// Field (1) 'Count'
 	b.Count = ssz.UnmarshallUint64(buf[8:16])
@@ -1436,7 +1436,7 @@ func (b *BeaconBlocksByRangeRequest) HashTreeRootWith(hh *ssz.Hasher) (err error
 	indx := hh.Index()
 
 	// Field (0) 'StartSlot'
-	hh.PutUint64(b.StartSlot)
+	hh.PutUint64(uint64(b.StartSlot))
 
 	// Field (1) 'Count'
 	hh.PutUint64(b.Count)
@@ -1472,7 +1472,7 @@ func (e *ENRForkID) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = append(dst, e.NextForkVersion...)
 
 	// Field (2) 'NextForkEpoch'
-	dst = ssz.MarshalUint64(dst, e.NextForkEpoch)
+	dst = ssz.MarshalUint64(dst, uint64(e.NextForkEpoch))
 
 	return
 }
@@ -1498,7 +1498,7 @@ func (e *ENRForkID) UnmarshalSSZ(buf []byte) error {
 	e.NextForkVersion = append(e.NextForkVersion, buf[4:8]...)
 
 	// Field (2) 'NextForkEpoch'
-	e.NextForkEpoch = ssz.UnmarshallUint64(buf[8:16])
+	e.NextForkEpoch = github_com_farazdagi_prysm_shared_types.Epoch(ssz.UnmarshallUint64(buf[8:16]))
 
 	return err
 }
@@ -1533,7 +1533,7 @@ func (e *ENRForkID) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	hh.PutBytes(e.NextForkVersion)
 
 	// Field (2) 'NextForkEpoch'
-	hh.PutUint64(e.NextForkEpoch)
+	hh.PutUint64(uint64(e.NextForkEpoch))
 
 	hh.Merkleize(indx)
 	return
