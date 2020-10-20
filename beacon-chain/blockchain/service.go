@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/pkg/errors"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/prysm/beacon-chain/cache"
@@ -61,7 +62,7 @@ type Service struct {
 	bestJustifiedCheckpt      *ethpb.Checkpoint
 	finalizedCheckpt          *ethpb.Checkpoint
 	prevFinalizedCheckpt      *ethpb.Checkpoint
-	nextEpochBoundarySlot     uint64
+	nextEpochBoundarySlot     types.Slot
 	initSyncState             map[[32]byte]*stateTrie.BeaconState
 	boundaryRoots             [][32]byte
 	checkpointState           *cache.CheckpointStateCache
@@ -75,7 +76,7 @@ type Service struct {
 	justifiedBalances         []uint64
 	justifiedBalancesLock     sync.RWMutex
 	checkPtInfoCache          *checkPtInfoCache
-	wsEpoch                   uint64
+	wsEpoch                   types.Epoch
 	wsRoot                    []byte
 	wsVerified                bool
 }
@@ -96,7 +97,7 @@ type Config struct {
 	OpsService        *attestations.Service
 	StateGen          *stategen.State
 	WspBlockRoot      []byte
-	WspEpoch          uint64
+	WspEpoch          types.Epoch
 }
 
 // NewService instantiates a new block service instance that will
@@ -434,7 +435,7 @@ func (s *Service) initializeChainInfo(ctx context.Context) error {
 		if err != nil {
 			return errors.Wrap(err, "could not hash head block")
 		}
-		headState, err := s.stateGen.StateByRoot(ctx, headRoot)
+		headState, err := s.beaconDB.HeadState(ctx)
 		if err != nil {
 			return errors.Wrap(err, "could not retrieve head state")
 		}

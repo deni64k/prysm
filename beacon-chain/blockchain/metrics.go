@@ -1,6 +1,7 @@
 package blockchain
 
 import (
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
@@ -115,7 +116,7 @@ var (
 )
 
 // reportSlotMetrics reports slot related metrics.
-func reportSlotMetrics(stateSlot, headSlot, clockSlot uint64, finalizedCheckpoint *ethpb.Checkpoint) {
+func reportSlotMetrics(stateSlot, headSlot, clockSlot types.Slot, finalizedCheckpoint *ethpb.Checkpoint) {
 	clockTimeSlot.Set(float64(clockSlot))
 	beaconSlot.Set(float64(stateSlot))
 	beaconHeadSlot.Set(float64(headSlot))
@@ -127,7 +128,7 @@ func reportSlotMetrics(stateSlot, headSlot, clockSlot uint64, finalizedCheckpoin
 
 // reportEpochMetrics reports epoch related metrics.
 func reportEpochMetrics(state *stateTrie.BeaconState) {
-	currentEpoch := state.Slot() / params.BeaconConfig().SlotsPerEpoch
+	currentEpoch := types.ToEpoch(state.Slot().Uint64() / params.BeaconConfig().SlotsPerEpoch.Uint64())
 
 	// Validator instances
 	pendingInstances := 0

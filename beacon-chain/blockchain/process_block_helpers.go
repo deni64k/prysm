@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/pkg/errors"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/prysm/beacon-chain/core/helpers"
@@ -17,7 +18,7 @@ import (
 )
 
 // CurrentSlot returns the current slot based on time.
-func (s *Service) CurrentSlot() uint64 {
+func (s *Service) CurrentSlot() types.Slot {
 	return helpers.CurrentSlot(uint64(s.genesisTime.Unix()))
 }
 
@@ -254,7 +255,7 @@ func (s *Service) updateFinalized(ctx context.Context, cp *ethpb.Checkpoint) err
 //    else:
 //        # root is older than queried slot, thus a skip slot. Return most recent root prior to slot
 //        return root
-func (s *Service) ancestor(ctx context.Context, root []byte, slot uint64) ([]byte, error) {
+func (s *Service) ancestor(ctx context.Context, root []byte, slot types.Slot) ([]byte, error) {
 	ctx, span := trace.StartSpan(ctx, "forkChoice.ancestor")
 	defer span.End()
 
@@ -275,7 +276,7 @@ func (s *Service) ancestor(ctx context.Context, root []byte, slot uint64) ([]byt
 }
 
 // This retrieves an ancestor root using fork choice store. The look up is looping through the a flat array structure.
-func (s *Service) ancestorByForkChoiceStore(ctx context.Context, r [32]byte, slot uint64) ([]byte, error) {
+func (s *Service) ancestorByForkChoiceStore(ctx context.Context, r [32]byte, slot types.Slot) ([]byte, error) {
 	if !s.forkChoiceStore.HasParent(r) {
 		return nil, errors.New("could not find root in fork choice store")
 	}
@@ -283,7 +284,7 @@ func (s *Service) ancestorByForkChoiceStore(ctx context.Context, r [32]byte, slo
 }
 
 // This retrieves an ancestor root using DB. The look up is recursively looking up DB. Slower than `ancestorByForkChoiceStore`.
-func (s *Service) ancestorByDB(ctx context.Context, r [32]byte, slot uint64) ([]byte, error) {
+func (s *Service) ancestorByDB(ctx context.Context, r [32]byte, slot types.Slot) ([]byte, error) {
 	// Stop recursive ancestry lookup if context is cancelled.
 	if ctx.Err() != nil {
 		return nil, ctx.Err()

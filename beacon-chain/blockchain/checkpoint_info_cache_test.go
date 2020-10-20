@@ -3,6 +3,7 @@ package blockchain
 import (
 	"testing"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	pb "github.com/prysmaticlabs/prysm/proto/beacon/p2p/v1"
 	"github.com/prysmaticlabs/prysm/shared/bytesutil"
@@ -34,7 +35,7 @@ func TestHotStateCache_RoundTrip(t *testing.T) {
 func TestHotStateCache_CanPrune(t *testing.T) {
 	c := newCheckPointInfoCache()
 	for i := 0; i < maxInfoSize+1; i++ {
-		cp := &ethpb.Checkpoint{Epoch: uint64(i), Root: make([]byte, 32)}
+		cp := &ethpb.Checkpoint{Epoch: types.Epoch(i), Root: make([]byte, 32)}
 		require.NoError(t, c.put(cp, &pb.CheckPtInfo{}))
 	}
 	require.Equal(t, len(c.cache.Keys()), maxInfoSize)

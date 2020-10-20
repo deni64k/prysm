@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/pkg/errors"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/prysm/beacon-chain/core/blocks"
@@ -12,6 +13,7 @@ import (
 	"github.com/prysmaticlabs/prysm/beacon-chain/state"
 	pb "github.com/prysmaticlabs/prysm/proto/beacon/p2p/v1"
 	"github.com/prysmaticlabs/prysm/shared/bytesutil"
+	"github.com/prysmaticlabs/prysm/shared/featureconfig"
 	"github.com/prysmaticlabs/prysm/shared/params"
 	"github.com/prysmaticlabs/prysm/shared/slotutil"
 	"github.com/prysmaticlabs/prysm/shared/timeutils"
@@ -42,9 +44,14 @@ func (s *Service) ReceiveAttestationNoPubsub(ctx context.Context, att *ethpb.Att
 		return errors.Wrap(err, "could not process attestation")
 	}
 
-	if err := s.updateHead(ctx, s.getJustifiedBalances()); err != nil {
-		log.Warnf("Resolving fork due to new attestation: %v", err)
-		return nil
+	if !featureconfig.Get().DisableUpdateHeadPerAttestation {
+		// This updates fork choice head, if a new head could not be updated due to
+		// long range or intermediate forking. It simply logs a warning and returns nil
+		// as that's more appropriate than returning errors.
+		if err := s.updateHead(ctx, s.getJustifiedBalances()); err != nil {
+			log.Warnf("Resolving fork due to new attestation: %v", err)
+			return nil
+		}
 	}
 
 	return nil
@@ -155,10 +162,10 @@ func (s *Service) processAttestation(subscribedToStateEvents chan struct{}) {
 func (s *Service) verifyCheckpointEpoch(c *ethpb.Checkpoint) bool {
 	now := uint64(timeutils.Now().Unix())
 	genesisTime := uint64(s.genesisTime.Unix())
-	currentSlot := (now - genesisTime) / params.BeaconConfig().SecondsPerSlot
+	currentSlot := types.ToSlot((now - genesisTime) / params.BeaconConfig().SecondsPerSlot)
 	currentEpoch := helpers.SlotToEpoch(currentSlot)
 
-	var prevEpoch uint64
+	var prevEpoch types.Epoch
 	if currentEpoch > 1 {
 		prevEpoch = currentEpoch - 1
 	}

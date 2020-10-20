@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/pkg/errors"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/prysm/beacon-chain/core/blocks"
@@ -67,7 +68,7 @@ func (s *Service) getAttPreState(ctx context.Context, c *ethpb.Checkpoint) (*sta
 // getAttCheckPtInfo retrieves the check point info given a check point. Check point info enables the node
 // to efficiently verify attestation signature without using beacon state. This function utilizes
 // the checkpoint info cache and will update the check point info cache on miss.
-func (s *Service) getAttCheckPtInfo(ctx context.Context, c *ethpb.Checkpoint, e uint64) (*pb.CheckPtInfo, error) {
+func (s *Service) getAttCheckPtInfo(ctx context.Context, c *ethpb.Checkpoint, e types.Epoch) (*pb.CheckPtInfo, error) {
 	// Return checkpoint info if exists in cache.
 	info, err := s.checkPtInfoCache.get(c)
 	if err != nil {
@@ -127,9 +128,9 @@ func (s *Service) getAttCheckPtInfo(ctx context.Context, c *ethpb.Checkpoint, e 
 
 // verifyAttTargetEpoch validates attestation is from the current or previous epoch.
 func (s *Service) verifyAttTargetEpoch(_ context.Context, genesisTime, nowTime uint64, c *ethpb.Checkpoint) error {
-	currentSlot := (nowTime - genesisTime) / params.BeaconConfig().SecondsPerSlot
+	currentSlot := types.ToSlot((nowTime - genesisTime) / params.BeaconConfig().SecondsPerSlot)
 	currentEpoch := helpers.SlotToEpoch(currentSlot)
-	var prevEpoch uint64
+	var prevEpoch types.Epoch
 	// Prevents previous epoch under flow
 	if currentEpoch > 1 {
 		prevEpoch = currentEpoch - 1
@@ -162,7 +163,7 @@ func (s *Service) verifyBeaconBlock(ctx context.Context, data *ethpb.Attestation
 }
 
 // verifyLMDFFGConsistent verifies LMD GHOST and FFG votes are consistent with each other.
-func (s *Service) verifyLMDFFGConsistent(ctx context.Context, ffgEpoch uint64, ffgRoot, lmdRoot []byte) error {
+func (s *Service) verifyLMDFFGConsistent(ctx context.Context, ffgEpoch types.Epoch, ffgRoot, lmdRoot []byte) error {
 	ffgSlot, err := helpers.StartSlot(ffgEpoch)
 	if err != nil {
 		return err
