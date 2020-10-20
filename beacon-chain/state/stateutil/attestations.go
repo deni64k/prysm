@@ -29,7 +29,7 @@ func PendingAttestationRoot(hasher htrutils.HashFn, att *pb.PendingAttestation) 
 			return [32]byte{}, err
 		}
 		inclusionBuf := make([]byte, 8)
-		binary.LittleEndian.PutUint64(inclusionBuf, att.InclusionDelay)
+		binary.LittleEndian.PutUint64(inclusionBuf, att.InclusionDelay.Uint64())
 		// Inclusion delay.
 		inclusionRoot := bytesutil.ToBytes32(inclusionBuf)
 
@@ -191,7 +191,7 @@ func (h *stateRootHasher) pendingAttestationRoot(hasher htrutils.HashFn, att *pb
 		copy(enc[0:2048], att.AggregationBits)
 
 		inclusionBuf := make([]byte, 8)
-		binary.LittleEndian.PutUint64(inclusionBuf, att.InclusionDelay)
+		binary.LittleEndian.PutUint64(inclusionBuf, att.InclusionDelay.Uint64())
 		copy(enc[2048:2056], inclusionBuf)
 
 		attDataBuf := marshalAttestationData(att.Data)
