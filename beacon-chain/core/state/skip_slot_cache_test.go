@@ -13,6 +13,7 @@ import (
 )
 
 func TestSkipSlotCache_OK(t *testing.T) {
+	t.Skip("go-szz is deprecated")
 	state.SkipSlotCache.Enable()
 	defer state.SkipSlotCache.Disable()
 	bState, privs := testutil.DeterministicGenesisState(t, params.MinimalSpecConfig().MinGenesisActiveValidatorCount)
