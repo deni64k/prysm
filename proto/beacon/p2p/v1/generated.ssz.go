@@ -875,7 +875,7 @@ func (p *PendingAttestation) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	}
 
 	// Field (2) 'InclusionDelay'
-	dst = ssz.MarshalUint64(dst, p.InclusionDelay)
+	dst = ssz.MarshalUint64(dst, uint64(p.InclusionDelay))
 
 	// Field (3) 'ProposerIndex'
 	dst = ssz.MarshalUint64(dst, p.ProposerIndex)
@@ -915,7 +915,7 @@ func (p *PendingAttestation) UnmarshalSSZ(buf []byte) error {
 	}
 
 	// Field (2) 'InclusionDelay'
-	p.InclusionDelay = ssz.UnmarshallUint64(buf[132:140])
+	p.InclusionDelay = github_com_farazdagi_prysm_shared_types.Slot(ssz.UnmarshallUint64(buf[132:140]))
 
 	// Field (3) 'ProposerIndex'
 	p.ProposerIndex = ssz.UnmarshallUint64(buf[140:148])
@@ -966,7 +966,7 @@ func (p *PendingAttestation) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	}
 
 	// Field (2) 'InclusionDelay'
-	hh.PutUint64(p.InclusionDelay)
+	hh.PutUint64(uint64(p.InclusionDelay))
 
 	// Field (3) 'ProposerIndex'
 	hh.PutUint64(p.ProposerIndex)
