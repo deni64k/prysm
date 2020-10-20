@@ -11,6 +11,7 @@ import (
 	"github.com/prysmaticlabs/prysm/beacon-chain/state/stateutil"
 	pbp2p "github.com/prysmaticlabs/prysm/proto/beacon/p2p/v1"
 	"github.com/prysmaticlabs/prysm/shared/bytesutil"
+	"github.com/prysmaticlabs/prysm/shared/featureconfig"
 	"github.com/prysmaticlabs/prysm/shared/hashutil"
 	"github.com/prysmaticlabs/prysm/shared/htrutils"
 	"github.com/prysmaticlabs/prysm/shared/params"
@@ -74,48 +75,91 @@ func (b *BeaconState) Copy() *BeaconState {
 	if !b.HasInnerState() {
 		return nil
 	}
+	var dst *BeaconState
+	if featureconfig.Get().NewBeaconStateLocks {
+		b.lock.RLock()
+		defer b.lock.RUnlock()
+		dst = &BeaconState{
+			state: &pbp2p.BeaconState{
+				// Primitive types, safe to copy.
+				GenesisTime:      b.state.GenesisTime,
+				Slot:             b.state.Slot,
+				Eth1DepositIndex: b.state.Eth1DepositIndex,
 
-	b.lock.RLock()
-	defer b.lock.RUnlock()
-	dst := &BeaconState{
-		state: &pbp2p.BeaconState{
-			// Primitive types, safe to copy.
-			GenesisTime:      b.state.GenesisTime,
-			Slot:             b.state.Slot,
-			Eth1DepositIndex: b.state.Eth1DepositIndex,
+				// Large arrays, infrequently changed, constant size.
+				RandaoMixes:               b.state.RandaoMixes,
+				StateRoots:                b.state.StateRoots,
+				BlockRoots:                b.state.BlockRoots,
+				PreviousEpochAttestations: b.state.PreviousEpochAttestations,
+				CurrentEpochAttestations:  b.state.CurrentEpochAttestations,
+				Slashings:                 b.state.Slashings,
+				Eth1DataVotes:             b.state.Eth1DataVotes,
 
-			// Large arrays, infrequently changed, constant size.
-			RandaoMixes:               b.state.RandaoMixes,
-			StateRoots:                b.state.StateRoots,
-			BlockRoots:                b.state.BlockRoots,
-			PreviousEpochAttestations: b.state.PreviousEpochAttestations,
-			CurrentEpochAttestations:  b.state.CurrentEpochAttestations,
-			Slashings:                 b.state.Slashings,
-			Eth1DataVotes:             b.state.Eth1DataVotes,
+				// Large arrays, increases over time.
+				Validators:      b.state.Validators,
+				Balances:        b.state.Balances,
+				HistoricalRoots: b.state.HistoricalRoots,
 
-			// Large arrays, increases over time.
-			Validators:      b.state.Validators,
-			Balances:        b.state.Balances,
-			HistoricalRoots: b.state.HistoricalRoots,
+				// Everything else, too small to be concerned about, constant size.
+				Fork:                        b.fork(),
+				LatestBlockHeader:           b.latestBlockHeader(),
+				Eth1Data:                    b.eth1Data(),
+				JustificationBits:           b.justificationBits(),
+				PreviousJustifiedCheckpoint: b.previousJustifiedCheckpoint(),
+				CurrentJustifiedCheckpoint:  b.currentJustifiedCheckpoint(),
+				FinalizedCheckpoint:         b.finalizedCheckpoint(),
+				GenesisValidatorsRoot:       b.genesisValidatorRoot(),
+			},
+			dirtyFields:           make(map[fieldIndex]interface{}, fieldCount),
+			dirtyIndices:          make(map[fieldIndex][]uint64, fieldCount),
+			rebuildTrie:           make(map[fieldIndex]bool, fieldCount),
+			sharedFieldReferences: make(map[fieldIndex]*reference, 10),
+			stateFieldLeaves:      make(map[fieldIndex]*FieldTrie, fieldCount),
 
-			// Everything else, too small to be concerned about, constant size.
-			Fork:                        b.fork(),
-			LatestBlockHeader:           b.latestBlockHeader(),
-			Eth1Data:                    b.eth1Data(),
-			JustificationBits:           b.justificationBits(),
-			PreviousJustifiedCheckpoint: b.previousJustifiedCheckpoint(),
-			CurrentJustifiedCheckpoint:  b.currentJustifiedCheckpoint(),
-			FinalizedCheckpoint:         b.finalizedCheckpoint(),
-			GenesisValidatorsRoot:       b.genesisValidatorRoot(),
-		},
-		dirtyFields:           make(map[fieldIndex]interface{}, fieldCount),
-		dirtyIndices:          make(map[fieldIndex][]uint64, fieldCount),
-		rebuildTrie:           make(map[fieldIndex]bool, fieldCount),
-		sharedFieldReferences: make(map[fieldIndex]*reference, 10),
-		stateFieldLeaves:      make(map[fieldIndex]*FieldTrie, fieldCount),
+			// Copy on write validator index map.
+			valMapHandler: b.valMapHandler,
+		}
+	} else {
+		dst = &BeaconState{
+			state: &pbp2p.BeaconState{
+				// Primitive types, safe to copy.
+				GenesisTime:      b.state.GenesisTime,
+				Slot:             b.state.Slot,
+				Eth1DepositIndex: b.state.Eth1DepositIndex,
 
-		// Copy on write validator index map.
-		valMapHandler: b.valMapHandler,
+				// Large arrays, infrequently changed, constant size.
+				RandaoMixes:               b.state.RandaoMixes,
+				StateRoots:                b.state.StateRoots,
+				BlockRoots:                b.state.BlockRoots,
+				PreviousEpochAttestations: b.state.PreviousEpochAttestations,
+				CurrentEpochAttestations:  b.state.CurrentEpochAttestations,
+				Slashings:                 b.state.Slashings,
+				Eth1DataVotes:             b.state.Eth1DataVotes,
+
+				// Large arrays, increases over time.
+				Validators:      b.state.Validators,
+				Balances:        b.state.Balances,
+				HistoricalRoots: b.state.HistoricalRoots,
+
+				// Everything else, too small to be concerned about, constant size.
+				Fork:                        b.Fork(),
+				LatestBlockHeader:           b.LatestBlockHeader(),
+				Eth1Data:                    b.Eth1Data(),
+				JustificationBits:           b.JustificationBits(),
+				PreviousJustifiedCheckpoint: b.PreviousJustifiedCheckpoint(),
+				CurrentJustifiedCheckpoint:  b.CurrentJustifiedCheckpoint(),
+				FinalizedCheckpoint:         b.FinalizedCheckpoint(),
+				GenesisValidatorsRoot:       b.GenesisValidatorRoot(),
+			},
+			dirtyFields:           make(map[fieldIndex]interface{}, fieldCount),
+			dirtyIndices:          make(map[fieldIndex][]uint64, fieldCount),
+			rebuildTrie:           make(map[fieldIndex]bool, fieldCount),
+			sharedFieldReferences: make(map[fieldIndex]*reference, 10),
+			stateFieldLeaves:      make(map[fieldIndex]*FieldTrie, fieldCount),
+
+			// Copy on write validator index map.
+			valMapHandler: b.valMapHandler,
+		}
 	}
 
 	for field, ref := range b.sharedFieldReferences {
@@ -262,7 +306,7 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 	case genesisValidatorRoot:
 		return bytesutil.ToBytes32(b.state.GenesisValidatorsRoot), nil
 	case slot:
-		return htrutils.Uint64Root(b.state.Slot), nil
+		return htrutils.Uint64Root(b.state.Slot.Uint64()), nil
 	case eth1DepositIndex:
 		return htrutils.Uint64Root(b.state.Eth1DepositIndex), nil
 	case fork:
@@ -271,7 +315,7 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return stateutil.BlockHeaderRoot(b.state.LatestBlockHeader)
 	case blockRoots:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.BlockRoots, params.BeaconConfig().SlotsPerHistoricalRoot)
+			err := b.resetFieldTrie(field, b.state.BlockRoots, params.BeaconConfig().SlotsPerHistoricalRoot.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}
@@ -282,7 +326,7 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return b.recomputeFieldTrie(blockRoots, b.state.BlockRoots)
 	case stateRoots:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.StateRoots, params.BeaconConfig().SlotsPerHistoricalRoot)
+			err := b.resetFieldTrie(field, b.state.StateRoots, params.BeaconConfig().SlotsPerHistoricalRoot.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}
@@ -297,7 +341,8 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return stateutil.Eth1Root(hasher, b.state.Eth1Data)
 	case eth1DataVotes:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.Eth1DataVotes, params.BeaconConfig().EpochsPerEth1VotingPeriod*params.BeaconConfig().SlotsPerEpoch)
+			err := b.resetFieldTrie(field, b.state.Eth1DataVotes,
+				params.BeaconConfig().EpochsPerEth1VotingPeriod.Uint64()*params.BeaconConfig().SlotsPerEpoch.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}
@@ -321,7 +366,7 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return stateutil.ValidatorBalancesRoot(b.state.Balances)
 	case randaoMixes:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.RandaoMixes, params.BeaconConfig().EpochsPerHistoricalVector)
+			err := b.resetFieldTrie(field, b.state.RandaoMixes, params.BeaconConfig().EpochsPerHistoricalVector.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}
@@ -334,7 +379,8 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return htrutils.SlashingsRoot(b.state.Slashings)
 	case previousEpochAttestations:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.PreviousEpochAttestations, params.BeaconConfig().MaxAttestations*params.BeaconConfig().SlotsPerEpoch)
+			err := b.resetFieldTrie(field, b.state.PreviousEpochAttestations,
+				params.BeaconConfig().MaxAttestations*params.BeaconConfig().SlotsPerEpoch.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}
@@ -345,7 +391,8 @@ func (b *BeaconState) rootSelector(field fieldIndex) ([32]byte, error) {
 		return b.recomputeFieldTrie(field, b.state.PreviousEpochAttestations)
 	case currentEpochAttestations:
 		if b.rebuildTrie[field] {
-			err := b.resetFieldTrie(field, b.state.CurrentEpochAttestations, params.BeaconConfig().MaxAttestations*params.BeaconConfig().SlotsPerEpoch)
+			err := b.resetFieldTrie(field, b.state.CurrentEpochAttestations,
+				params.BeaconConfig().MaxAttestations*params.BeaconConfig().SlotsPerEpoch.Uint64())
 			if err != nil {
 				return [32]byte{}, err
 			}

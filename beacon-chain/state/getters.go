@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"time"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	ethpb "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/go-bitfield"
 	pbp2p "github.com/prysmaticlabs/prysm/proto/beacon/p2p/v1"
 	"github.com/prysmaticlabs/prysm/shared/bytesutil"
+	"github.com/prysmaticlabs/prysm/shared/featureconfig"
 	"github.com/prysmaticlabs/prysm/shared/params"
 )
 
@@ -23,7 +25,7 @@ func (v *ReadOnlyValidator) EffectiveBalance() uint64 {
 
 // ActivationEligibilityEpoch returns the activation eligibility epoch of the
 // read only validator.
-func (v *ReadOnlyValidator) ActivationEligibilityEpoch() uint64 {
+func (v *ReadOnlyValidator) ActivationEligibilityEpoch() types.Epoch {
 	if v == nil || v.validator == nil {
 		return 0
 	}
@@ -32,7 +34,7 @@ func (v *ReadOnlyValidator) ActivationEligibilityEpoch() uint64 {
 
 // ActivationEpoch returns the activation epoch of the
 // read only validator.
-func (v *ReadOnlyValidator) ActivationEpoch() uint64 {
+func (v *ReadOnlyValidator) ActivationEpoch() types.Epoch {
 	if v == nil || v.validator == nil {
 		return 0
 	}
@@ -41,7 +43,7 @@ func (v *ReadOnlyValidator) ActivationEpoch() uint64 {
 
 // WithdrawableEpoch returns the withdrawable epoch of the
 // read only validator.
-func (v *ReadOnlyValidator) WithdrawableEpoch() uint64 {
+func (v *ReadOnlyValidator) WithdrawableEpoch() types.Epoch {
 	if v == nil || v.validator == nil {
 		return 0
 	}
@@ -50,7 +52,7 @@ func (v *ReadOnlyValidator) WithdrawableEpoch() uint64 {
 
 // ExitEpoch returns the exit epoch of the
 // read only validator.
-func (v *ReadOnlyValidator) ExitEpoch() uint64 {
+func (v *ReadOnlyValidator) ExitEpoch() types.Epoch {
 	if v == nil || v.validator == nil {
 		return 0
 	}
@@ -107,30 +109,55 @@ func (b *BeaconState) CloneInnerState() *pbp2p.BeaconState {
 		return nil
 	}
 
-	b.lock.RLock()
-	defer b.lock.RUnlock()
+	if featureconfig.Get().NewBeaconStateLocks {
+		b.lock.RLock()
+		defer b.lock.RUnlock()
+		return &pbp2p.BeaconState{
+			GenesisTime:                 b.genesisTime(),
+			GenesisValidatorsRoot:       b.genesisValidatorRoot(),
+			Slot:                        b.slot(),
+			Fork:                        b.fork(),
+			LatestBlockHeader:           b.latestBlockHeader(),
+			BlockRoots:                  b.blockRoots(),
+			StateRoots:                  b.stateRoots(),
+			HistoricalRoots:             b.historicalRoots(),
+			Eth1Data:                    b.eth1Data(),
+			Eth1DataVotes:               b.eth1DataVotes(),
+			Eth1DepositIndex:            b.eth1DepositIndex(),
+			Validators:                  b.validators(),
+			Balances:                    b.balances(),
+			RandaoMixes:                 b.randaoMixes(),
+			Slashings:                   b.slashings(),
+			PreviousEpochAttestations:   b.previousEpochAttestations(),
+			CurrentEpochAttestations:    b.currentEpochAttestations(),
+			JustificationBits:           b.justificationBits(),
+			PreviousJustifiedCheckpoint: b.previousJustifiedCheckpoint(),
+			CurrentJustifiedCheckpoint:  b.currentJustifiedCheckpoint(),
+			FinalizedCheckpoint:         b.finalizedCheckpoint(),
+		}
+	}
 	return &pbp2p.BeaconState{
-		GenesisTime:                 b.genesisTime(),
-		GenesisValidatorsRoot:       b.genesisValidatorRoot(),
-		Slot:                        b.slot(),
-		Fork:                        b.fork(),
-		LatestBlockHeader:           b.latestBlockHeader(),
-		BlockRoots:                  b.blockRoots(),
-		StateRoots:                  b.stateRoots(),
-		HistoricalRoots:             b.historicalRoots(),
-		Eth1Data:                    b.eth1Data(),
-		Eth1DataVotes:               b.eth1DataVotes(),
-		Eth1DepositIndex:            b.eth1DepositIndex(),
-		Validators:                  b.validators(),
-		Balances:                    b.balances(),
-		RandaoMixes:                 b.randaoMixes(),
-		Slashings:                   b.slashings(),
-		PreviousEpochAttestations:   b.previousEpochAttestations(),
-		CurrentEpochAttestations:    b.currentEpochAttestations(),
-		JustificationBits:           b.justificationBits(),
-		PreviousJustifiedCheckpoint: b.previousJustifiedCheckpoint(),
-		CurrentJustifiedCheckpoint:  b.currentJustifiedCheckpoint(),
-		FinalizedCheckpoint:         b.finalizedCheckpoint(),
+		GenesisTime:                 b.GenesisTime(),
+		GenesisValidatorsRoot:       b.GenesisValidatorRoot(),
+		Slot:                        b.Slot(),
+		Fork:                        b.Fork(),
+		LatestBlockHeader:           b.LatestBlockHeader(),
+		BlockRoots:                  b.BlockRoots(),
+		StateRoots:                  b.StateRoots(),
+		HistoricalRoots:             b.HistoricalRoots(),
+		Eth1Data:                    b.Eth1Data(),
+		Eth1DataVotes:               b.Eth1DataVotes(),
+		Eth1DepositIndex:            b.Eth1DepositIndex(),
+		Validators:                  b.Validators(),
+		Balances:                    b.Balances(),
+		RandaoMixes:                 b.RandaoMixes(),
+		Slashings:                   b.Slashings(),
+		PreviousEpochAttestations:   b.PreviousEpochAttestations(),
+		CurrentEpochAttestations:    b.CurrentEpochAttestations(),
+		JustificationBits:           b.JustificationBits(),
+		PreviousJustifiedCheckpoint: b.PreviousJustifiedCheckpoint(),
+		CurrentJustifiedCheckpoint:  b.CurrentJustifiedCheckpoint(),
+		FinalizedCheckpoint:         b.FinalizedCheckpoint(),
 	}
 }
 
@@ -215,7 +242,7 @@ func (b *BeaconState) genesisUnixTime() time.Time {
 }
 
 // Slot of the current beacon chain state.
-func (b *BeaconState) Slot() uint64 {
+func (b *BeaconState) Slot() types.Slot {
 	if !b.HasInnerState() {
 		return 0
 	}
@@ -228,7 +255,7 @@ func (b *BeaconState) Slot() uint64 {
 
 // slot of the current beacon chain state.
 // This assumes that a lock is already held on BeaconState.
-func (b *BeaconState) slot() uint64 {
+func (b *BeaconState) slot() types.Slot {
 	if !b.HasInnerState() {
 		return 0
 	}
@@ -1032,7 +1059,7 @@ func (b *BeaconState) finalizedCheckpoint() *ethpb.Checkpoint {
 }
 
 // FinalizedCheckpointEpoch returns the epoch value of the finalized checkpoint.
-func (b *BeaconState) FinalizedCheckpointEpoch() uint64 {
+func (b *BeaconState) FinalizedCheckpointEpoch() types.Epoch {
 	if !b.HasInnerState() {
 		return 0
 	}

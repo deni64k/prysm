@@ -362,6 +362,7 @@ func TestLoadeStateBySlot_CanReplayBlock(t *testing.T) {
 }
 
 func TestLastAncestorState_CanGetUsingDB(t *testing.T) {
+	t.Skip("Uses deprecated go-ssz, fix or remove")
 	ctx := context.Background()
 	db, _ := testDB.SetupDB(t)
 	service := New(db, cache.NewStateSummaryCache())
@@ -401,6 +402,7 @@ func TestLastAncestorState_CanGetUsingDB(t *testing.T) {
 }
 
 func TestLastAncestorState_CanGetUsingCache(t *testing.T) {
+	t.Skip("Uses deprecated go-ssz, fix or remove")
 	ctx := context.Background()
 	db, _ := testDB.SetupDB(t)
 	service := New(db, cache.NewStateSummaryCache())
