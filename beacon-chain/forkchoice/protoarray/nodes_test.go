@@ -4,6 +4,7 @@ import (
 	"context"
 	"testing"
 
+	types "github.com/farazdagi/prysm-shared-types"
 	"github.com/prysmaticlabs/prysm/shared/bytesutil"
 	"github.com/prysmaticlabs/prysm/shared/testutil/assert"
 	"github.com/prysmaticlabs/prysm/shared/testutil/require"
@@ -60,8 +61,8 @@ func TestStore_Insert_UnknownParent(t *testing.T) {
 	assert.Equal(t, 1, len(s.nodes), "Did not insert block")
 	assert.Equal(t, 1, len(s.nodesIndices), "Did not insert block")
 	assert.Equal(t, NonExistentNode, s.nodes[0].parent, "Incorrect parent")
-	assert.Equal(t, uint64(1), s.nodes[0].justifiedEpoch, "Incorrect justification")
-	assert.Equal(t, uint64(1), s.nodes[0].finalizedEpoch, "Incorrect finalization")
+	assert.Equal(t, types.Epoch(1), s.nodes[0].justifiedEpoch, "Incorrect justification")
+	assert.Equal(t, types.Epoch(1), s.nodes[0].finalizedEpoch, "Incorrect finalization")
 	assert.Equal(t, [32]byte{'A'}, s.nodes[0].root, "Incorrect root")
 }
 
@@ -76,8 +77,8 @@ func TestStore_Insert_KnownParent(t *testing.T) {
 	assert.Equal(t, 2, len(s.nodes), "Did not insert block")
 	assert.Equal(t, 2, len(s.nodesIndices), "Did not insert block")
 	assert.Equal(t, uint64(0), s.nodes[1].parent, "Incorrect parent")
-	assert.Equal(t, uint64(1), s.nodes[1].justifiedEpoch, "Incorrect justification")
-	assert.Equal(t, uint64(1), s.nodes[1].finalizedEpoch, "Incorrect finalization")
+	assert.Equal(t, types.Epoch(1), s.nodes[1].justifiedEpoch, "Incorrect justification")
+	assert.Equal(t, types.Epoch(1), s.nodes[1].finalizedEpoch, "Incorrect finalization")
 	assert.Equal(t, [32]byte{'A'}, s.nodes[1].root, "Incorrect root")
 }
 
@@ -94,8 +95,8 @@ func TestStore_ApplyScoreChanges_UpdateEpochs(t *testing.T) {
 
 	// The justified and finalized epochs in Store should be updated to 1 and 1 given the following input.
 	require.NoError(t, s.applyWeightChanges(context.Background(), 1, 1, []int{}))
-	assert.Equal(t, uint64(1), s.justifiedEpoch, "Did not update justified epoch")
-	assert.Equal(t, uint64(1), s.finalizedEpoch, "Did not update finalized epoch")
+	assert.Equal(t, types.Epoch(1), s.justifiedEpoch, "Did not update justified epoch")
+	assert.Equal(t, types.Epoch(1), s.finalizedEpoch, "Did not update finalized epoch")
 }
 
 func TestStore_ApplyScoreChanges_UpdateWeightsPositiveDelta(t *testing.T) {
@@ -263,7 +264,7 @@ func TestStore_Prune_LessThanThreshold(t *testing.T) {
 	nodes := make([]*Node, 0)
 	for i := 0; i < numOfNodes; i++ {
 		indices[indexToHash(uint64(i))] = uint64(i)
-		nodes = append(nodes, &Node{slot: uint64(i)})
+		nodes = append(nodes, &Node{slot: types.ToSlot(uint64(i))})
 	}
 
 	s := &Store{nodes: nodes, nodesIndices: indices, pruneThreshold: 100}
@@ -282,7 +283,7 @@ func TestStore_Prune_MoreThanThreshold(t *testing.T) {
 	nodes := make([]*Node, 0)
 	for i := 0; i < numOfNodes; i++ {
 		indices[indexToHash(uint64(i))] = uint64(i)
-		nodes = append(nodes, &Node{slot: uint64(i), root: indexToHash(uint64(i)),
+		nodes = append(nodes, &Node{slot: types.ToSlot(uint64(i)), root: indexToHash(uint64(i)),
 			bestDescendant: NonExistentNode, bestChild: NonExistentNode})
 	}
 
@@ -301,7 +302,7 @@ func TestStore_Prune_MoreThanOnce(t *testing.T) {
 	nodes := make([]*Node, 0)
 	for i := 0; i < numOfNodes; i++ {
 		indices[indexToHash(uint64(i))] = uint64(i)
-		nodes = append(nodes, &Node{slot: uint64(i), root: indexToHash(uint64(i)),
+		nodes = append(nodes, &Node{slot: types.ToSlot(uint64(i)), root: indexToHash(uint64(i)),
 			bestDescendant: NonExistentNode, bestChild: NonExistentNode})
 	}
 
@@ -320,8 +321,8 @@ func TestStore_Prune_MoreThanOnce(t *testing.T) {
 func TestStore_LeadsToViableHead(t *testing.T) {
 	tests := []struct {
 		n              *Node
-		justifiedEpoch uint64
-		finalizedEpoch uint64
+		justifiedEpoch types.Epoch
+		finalizedEpoch types.Epoch
 		want           bool
 	}{
 		{&Node{}, 0, 0, true},
@@ -346,8 +347,8 @@ func TestStore_LeadsToViableHead(t *testing.T) {
 func TestStore_ViableForHead(t *testing.T) {
 	tests := []struct {
 		n              *Node
-		justifiedEpoch uint64
-		finalizedEpoch uint64
+		justifiedEpoch types.Epoch
+		finalizedEpoch types.Epoch
 		want           bool
 	}{
 		{&Node{}, 0, 0, true},
