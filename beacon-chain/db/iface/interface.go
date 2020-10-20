@@ -8,6 +8,7 @@ import (
 	"io"
 
 	"github.com/ethereum/go-ethereum/common"
+	types "github.com/farazdagi/prysm-shared-types"
 	eth "github.com/prysmaticlabs/ethereumapis/eth/v1alpha1"
 	"github.com/prysmaticlabs/prysm/beacon-chain/db/filters"
 	"github.com/prysmaticlabs/prysm/beacon-chain/state"
@@ -19,20 +20,20 @@ import (
 type ReadOnlyDatabase interface {
 	// Block related methods.
 	Block(ctx context.Context, blockRoot [32]byte) (*eth.SignedBeaconBlock, error)
-	Blocks(ctx context.Context, f *filters.QueryFilter) ([]*eth.SignedBeaconBlock, [][32]byte, error)
+	Blocks(ctx context.Context, f *filters.QueryFilter) ([]*eth.SignedBeaconBlock, error)
 	BlockRoots(ctx context.Context, f *filters.QueryFilter) ([][32]byte, error)
 	HasBlock(ctx context.Context, blockRoot [32]byte) bool
 	GenesisBlock(ctx context.Context) (*eth.SignedBeaconBlock, error)
 	IsFinalizedBlock(ctx context.Context, blockRoot [32]byte) bool
 	FinalizedChildBlock(ctx context.Context, blockRoot [32]byte) (*eth.SignedBeaconBlock, error)
-	HighestSlotBlocksBelow(ctx context.Context, slot uint64) ([]*eth.SignedBeaconBlock, error)
+	HighestSlotBlocksBelow(ctx context.Context, slot types.Slot) ([]*eth.SignedBeaconBlock, error)
 	// State related methods.
 	State(ctx context.Context, blockRoot [32]byte) (*state.BeaconState, error)
 	GenesisState(ctx context.Context) (*state.BeaconState, error)
 	HasState(ctx context.Context, blockRoot [32]byte) bool
 	StateSummary(ctx context.Context, blockRoot [32]byte) (*ethereum_beacon_p2p_v1.StateSummary, error)
 	HasStateSummary(ctx context.Context, blockRoot [32]byte) bool
-	HighestSlotStatesBelow(ctx context.Context, slot uint64) ([]*state.BeaconState, error)
+	HighestSlotStatesBelow(ctx context.Context, slot types.Slot) ([]*state.BeaconState, error)
 	// Slashing operations.
 	ProposerSlashing(ctx context.Context, slashingRoot [32]byte) (*eth.ProposerSlashing, error)
 	AttesterSlashing(ctx context.Context, slashingRoot [32]byte) (*eth.AttesterSlashing, error)
@@ -44,8 +45,8 @@ type ReadOnlyDatabase interface {
 	// Checkpoint operations.
 	JustifiedCheckpoint(ctx context.Context) (*eth.Checkpoint, error)
 	FinalizedCheckpoint(ctx context.Context) (*eth.Checkpoint, error)
-	ArchivedPointRoot(ctx context.Context, slot uint64) [32]byte
-	HasArchivedPoint(ctx context.Context, slot uint64) bool
+	ArchivedPointRoot(ctx context.Context, slot types.Slot) [32]byte
+	HasArchivedPoint(ctx context.Context, slot types.Slot) bool
 	LastArchivedRoot(ctx context.Context) [32]byte
 	LastArchivedSlot(ctx context.Context) (uint64, error)
 	// Deposit contract related handlers.
