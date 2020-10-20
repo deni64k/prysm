@@ -194,6 +194,8 @@ github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7
 github.com/evanphx/json-patch v4.2.0+incompatible/go.mod h1:50XU6AFN0ol/bzJsmQLiYLvXMP4fmwYFNcr97nuDLSk=
 github.com/farazdagi/prysm-shared-types v0.0.0-20201019221602-a80cc791f553 h1:e2zkyhuTX0jnreU2xB7JJlZonpekt1wWREJ/x1C79r8=
 github.com/farazdagi/prysm-shared-types v0.0.0-20201019221602-a80cc791f553/go.mod h1:5rQ5PIY+Q54onzfzzYv0UZZ22AphY/W20axGJ2oapx8=
+github.com/farazdagi/prysm-shared-types v0.0.0-20201020041619-ae5cc7fab6db h1:wp7iGDv1D9uuQ7MRMas/bk0jR1/aGSRYjjuBXQ3l2JY=
+github.com/farazdagi/prysm-shared-types v0.0.0-20201020041619-ae5cc7fab6db/go.mod h1:5rQ5PIY+Q54onzfzzYv0UZZ22AphY/W20axGJ2oapx8=
 github.com/fatih/color v1.3.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
 github.com/fatih/color v1.9.0 h1:8xPHl4/q1VyqGIPif1F+1V3Y3lSmrq01EabUW3CoW5s=
 github.com/fatih/color v1.9.0/go.mod h1:eQcE1qtQxscV5RaZvpXrrb8Drkc3/DdQ+uUYCNjL+zU=
@@ -920,6 +922,10 @@ github.com/prysmaticlabs/ethereumapis v0.0.0-20201003171600-a72e5f77d233 h1:dGeu
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201003171600-a72e5f77d233/go.mod h1:k7b2dxy6RppCG6kmOJkNOXzRpEoTdsPygc2aQhsUsZk=
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201020005145-8eb9325d9069 h1:YuVJCuNRS6Y2HYEpf5/up804BU1Jme0UZtRvQH9KTzg=
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201020005145-8eb9325d9069/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020043504-3f44d2b0aba8 h1:RxFVBl0wudhaE16nipycKUijSwoo/y+lmbdnzS4dknk=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020043504-3f44d2b0aba8/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020044121-93b4f3be9104 h1:CnDGrEmSAI5xhaeftuFC0ADGmtYyvV71WEhQy9c9KU8=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020044121-93b4f3be9104/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20191017011753-53b773adde52/go.mod h1:hCwmef+4qXWjv0jLDbQdWnL0Ol7cS7/lCSS26WR+u6s=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20200322041314-62c2aee71669 h1:cX6YRZnZ9sgMqM5U14llxUiXVNJ3u07Res1IIjTOgtI=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20200322041314-62c2aee71669/go.mod h1:hCwmef+4qXWjv0jLDbQdWnL0Ol7cS7/lCSS26WR+u6s=

@@ -19,7 +19,7 @@ require (
 	github.com/edsrzf/mmap-go v1.0.0 // indirect
 	github.com/emicklei/dot v0.11.0
 	github.com/ethereum/go-ethereum v0.0.0-00010101000000-000000000000
-	github.com/farazdagi/prysm-shared-types v0.0.0-20201019221602-a80cc791f553
+	github.com/farazdagi/prysm-shared-types v0.0.0-20201020041619-ae5cc7fab6db
 	github.com/fatih/color v1.9.0 // indirect
 	github.com/ferranbt/fastssz v0.0.0-20201019195157-d731d50f87dd
 	github.com/fjl/memsize v0.0.0-20190710130421-bcb5799ab5e5
@@ -89,7 +89,7 @@ require (
 	github.com/prometheus/client_golang v1.7.1
 	github.com/prometheus/tsdb v0.10.0 // indirect
 	github.com/protolambda/zssz v0.1.5
-	github.com/prysmaticlabs/ethereumapis v0.0.0-20201020005145-8eb9325d9069
+	github.com/prysmaticlabs/ethereumapis v0.0.0-20201020044121-93b4f3be9104
 	github.com/prysmaticlabs/go-bitfield v0.0.0-20200618145306-2ae0807bef65
 	github.com/prysmaticlabs/go-ssz v0.0.0-20200612203617-6d5c9aa213ae
 	github.com/prysmaticlabs/prombbolt v0.0.0-20200324184628-09789ef63796
