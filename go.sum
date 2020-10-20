@@ -926,6 +926,8 @@ github.com/prysmaticlabs/ethereumapis v0.0.0-20201020043504-3f44d2b0aba8 h1:RxFV
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201020043504-3f44d2b0aba8/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201020044121-93b4f3be9104 h1:CnDGrEmSAI5xhaeftuFC0ADGmtYyvV71WEhQy9c9KU8=
 github.com/prysmaticlabs/ethereumapis v0.0.0-20201020044121-93b4f3be9104/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020164730-42e2f82523f9 h1:29bxqBMIjvQykfyHh3ppK4Qd2ylB6at5GDtebS/saZw=
+github.com/prysmaticlabs/ethereumapis v0.0.0-20201020164730-42e2f82523f9/go.mod h1:C17R7rtUqJov/Vy4/yIhhgBb86HrW9daTaRenAuksws=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20191017011753-53b773adde52/go.mod h1:hCwmef+4qXWjv0jLDbQdWnL0Ol7cS7/lCSS26WR+u6s=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20200322041314-62c2aee71669 h1:cX6YRZnZ9sgMqM5U14llxUiXVNJ3u07Res1IIjTOgtI=
 github.com/prysmaticlabs/go-bitfield v0.0.0-20200322041314-62c2aee71669/go.mod h1:hCwmef+4qXWjv0jLDbQdWnL0Ol7cS7/lCSS26WR+u6s=
