@@ -1283,7 +1283,7 @@ func (s *Status) MarshalSSZTo(buf []byte) (dst []byte, err error) {
 	dst = append(dst, s.FinalizedRoot...)
 
 	// Field (2) 'FinalizedEpoch'
-	dst = ssz.MarshalUint64(dst, s.FinalizedEpoch)
+	dst = ssz.MarshalUint64(dst, uint64(s.FinalizedEpoch))
 
 	// Field (3) 'HeadRoot'
 	if len(s.HeadRoot) != 32 {
@@ -1319,7 +1319,7 @@ func (s *Status) UnmarshalSSZ(buf []byte) error {
 	s.FinalizedRoot = append(s.FinalizedRoot, buf[4:36]...)
 
 	// Field (2) 'FinalizedEpoch'
-	s.FinalizedEpoch = ssz.UnmarshallUint64(buf[36:44])
+	s.FinalizedEpoch = github_com_farazdagi_prysm_shared_types.Epoch(ssz.UnmarshallUint64(buf[36:44]))
 
 	// Field (3) 'HeadRoot'
 	if cap(s.HeadRoot) == 0 {
@@ -1363,7 +1363,7 @@ func (s *Status) HashTreeRootWith(hh *ssz.Hasher) (err error) {
 	hh.PutBytes(s.FinalizedRoot)
 
 	// Field (2) 'FinalizedEpoch'
-	hh.PutUint64(s.FinalizedEpoch)
+	hh.PutUint64(uint64(s.FinalizedEpoch))
 
 	// Field (3) 'HeadRoot'
 	if len(s.HeadRoot) != 32 {
